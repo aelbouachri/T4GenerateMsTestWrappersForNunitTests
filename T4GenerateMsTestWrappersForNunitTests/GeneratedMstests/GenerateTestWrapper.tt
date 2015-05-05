@@ -1,0 +1,145 @@
+﻿<#@ template debug="true" hostspecific="true" language="C#" #>
+<#@ assembly name="C:\tmp\ex1\WebApplication1\packages\NUnit.2.6.4\lib\nunit.framework.dll" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="EnvDTE" #>
+<#@ import namespace="EnvDTE" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="NUnit.Framework" #>
+<#@ output extension=".cs" #>
+
+// This is generated code using the T4 template by <#=Host.TemplateFile #>
+using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
+
+namespace GeneratedMsTest
+{
+    <#
+	IServiceProvider serviceProvider = (IServiceProvider)this.Host;
+    DTE dte = serviceProvider.GetService(typeof(DTE)) as DTE;  
+    // var configName = dte.Solution.SolutionBuild.ActiveConfiguration.Name ;
+
+
+	var configName = "Debug";
+	//var generatingProjectFolder = $(ProjectDir);
+	
+	var generatingProjectFolder = "GeneratedMstests";
+	var solutionPath = System.IO.Path.GetDirectoryName(Host.TemplateFile) + @"\..\";
+
+	// we could use
+	foreach (var dllpath in Directory.GetFiles(solutionPath, "*.dll",SearchOption.AllDirectories))
+	{ 
+	
+	   // we only want to scan for DLLs in the bin folder of other projects
+	   // this is ugly code but works
+       if ((dllpath.Contains("package")== false) &&  // the nuget folder
+	       (dllpath.Contains("obj")== false) &&      // and temp folder
+		   (dllpath.Contains(configName) == true) && // the same configuration was we are building
+		   (dllpath.Contains(generatingProjectFolder + @"\bin") == false))  // the project contain template
+	   {
+	   #>
+// Considering DLL <#= dllpath #>
+	   <#
+
+	      // load the dll, we do it via a Btye array to avoid putting a lock on the file
+	      Byte[] bytes = System.IO.File.ReadAllBytes(dllpath);
+	
+	      // find the nUnit test fictures in the assembly
+		  foreach (var type in System.Reflection.Assembly.Load(bytes).GetTypes().Where( t => t.IsDefined(typeof(NUnit.Framework.TestFixtureAttribute), true)))
+		  {  #>
+	         ///
+	         /// Adding tests found in the DLL <#=dllpath #>
+	         ///
+		    [TestClass]
+		    public class Generated_<#= type.Namespace#>_<#= type.Name #> 
+		    {
+
+			    private static <#= type.Namespace#>.<#= type.Name#> wrapperedTest = new <#= type.Namespace#>.<#= type.Name#>();
+		
+				public Generated_<#= type.Namespace#>_<#= type.Name #>()
+				{
+					//
+					// TODO: Add constructor logic here
+					//
+				}
+
+				private Microsoft.VisualStudio.TestTools.UnitTesting.TestContext testContextInstance;
+
+				/// <summary>
+				///Gets or sets the test context which provides
+				///information about and functionality for the current test run.
+				///</summary>
+				public Microsoft.VisualStudio.TestTools.UnitTesting.TestContext TestContext
+				{
+					get
+					{
+						return testContextInstance;
+					}
+					set
+					{
+						testContextInstance = value;
+					}
+				}
+
+    			<# foreach (var method in type.GetMethods().Where(m => m.IsDefined(typeof(NUnit.Framework.TestFixtureSetUpAttribute), true)))
+				{   #>
+				// Use ClassInitialize to run code before running the first test in the class
+				[ClassInitialize()]
+				public static void ClassInitialize(Microsoft.VisualStudio.TestTools.UnitTesting.TestContext testContext) 
+				{ 
+					wrapperedTest.<#= method.Name #>();		
+				}
+				<# } #>
+        
+    			<# foreach (var method in type.GetMethods().Where(m => m.IsDefined(typeof(NUnit.Framework.TestFixtureTearDownAttribute), true)))
+				{   #>
+				// Use ClassCleanup to run code after all tests in a class have run
+				[ClassCleanup()]
+				public static void ClassCleanup() 
+				{ 
+					wrapperedTest.<#= method.Name #>();
+				}
+				<# } #>
+
+    			<# foreach (var method in type.GetMethods().Where(m => m.IsDefined(typeof(NUnit.Framework.SetUpAttribute), true)))
+				{   #>
+				// Use TestInitialize to run code before running each test 
+				[TestInitialize()]
+				public void TestInitialize() 
+				{ 
+					 wrapperedTest.<#= method.Name #>();
+				}
+
+				<# } #>
+
+    			<# foreach (var method in type.GetMethods().Where(m => m.IsDefined(typeof(NUnit.Framework.TearDownAttribute), true)))
+				{   #>
+				// Use TestCleanup to run code after each test has run
+				[TestCleanup()]
+				public void TestCleanup() 
+				{ 
+					wrapperedTest.<#= method.Name #>();
+				}
+   				<# } #>
+
+
+				<# foreach (var method in type.GetMethods().Where(m => m.IsDefined(typeof(NUnit.Framework.TestAttribute), true)))
+				{	#>
+				[TestMethod]
+				public void Generated_<#= method.Name #>()
+				{
+					wrapperedTest.<#= method.Name #>();
+				}
+			<# } #>
+		}
+		<# } // loop types #>
+
+	<#
+	} // if for dll name check
+  }  // loop for dll search #>
+
+}
+
