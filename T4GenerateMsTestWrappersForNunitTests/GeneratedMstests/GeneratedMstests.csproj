@@ -108,10 +108,40 @@
   </Choose>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  
+  <!-- Include the T$ processing targets-->
+  <Import Project="$(VSToolsPath)\TextTemplating\Microsoft.TextTemplating.targets" />
+  
+  <!-- Set parameters we want to access in the transform -->
+  <ItemGroup>
+    <T4ParameterValues Include="slnDir">
+      <Value>$(MSBuildProjectDirectory)\..</Value>
+      <Visible>false</Visible>
+    </T4ParameterValues>
+   </ItemGroup>
+
+  <ItemGroup>
+    <T4ParameterValues Include="configuration">
+      <Value>$(Configuration)</Value>
+      <Visible>false</Visible>
+    </T4ParameterValues>
+  </ItemGroup>
+
+  <ItemGroup>
+    <T4ParameterValues Include="projectName">
+      <Value>$(MSBuildProjectName)</Value>
+      <Visible>false</Visible>
+    </T4ParameterValues>
+  </ItemGroup>
+  
+  <!-- Tell the MSBuild T4 task to make the property available: -->
   <PropertyGroup>
+    <!-- do the transform -->
     <TransformOnBuild>true</TransformOnBuild>
+    <!-- Force a complete reprocess -->
+    <TransformOutOfDateOnly>false</TransformOutOfDateOnly>
   </PropertyGroup>
-  <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TextTemplating\Microsoft.TextTemplating.targets" />
+    
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>

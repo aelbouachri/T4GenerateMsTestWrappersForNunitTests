@@ -1,16 +1,17 @@
 ﻿
-// This is generated code using the T4 template by C:\tmp\ex1\WebApplication1\GeneratedMstests\GenerateTestWrapper.tt
+// This is generated code using the T4 template
+// The template file is C:\projects\github\T4GenerateMsTestWrappersForNunitTests\T4GenerateMsTestWrappersForNunitTests\GeneratedMstests\GenerateTestWrapper.tt
+// Generated from MSBuild
+
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
 
 namespace GeneratedMsTest
 {
-    // Considering DLL C:\tmp\ex1\WebApplication1\GeneratedMstests\..\UnitTestProject1\bin\Debug\nunit.framework.dll
-	   
-	// Considering DLL C:\tmp\ex1\WebApplication1\GeneratedMstests\..\UnitTestProject1\bin\Debug\UnitTestProject1.dll
-	   	         ///
-	         /// Adding tests found in the DLL C:\tmp\ex1\WebApplication1\GeneratedMstests\..\UnitTestProject1\bin\Debug\UnitTestProject1.dll
+    
+		         ///
+	         /// Adding tests found in the DLL C:\projects\github\T4GenerateMsTestWrappersForNunitTests\T4GenerateMsTestWrappersForNunitTests\GeneratedMstests\..\UnitTestProject1\bin\Debug\UnitTestProject1.dll
 	         ///
 		    [TestClass]
 		    public class Generated_UnitTestProject1_NUnitTests 
@@ -21,7 +22,7 @@ namespace GeneratedMsTest
 				public Generated_UnitTestProject1_NUnitTests()
 				{
 					//
-					// TODO: Add constructor logic here
+					// Add constructor logic here if require
 					//
 				}
 
@@ -85,11 +86,9 @@ namespace GeneratedMsTest
 				}
 					}
 		
-	// Considering DLL C:\tmp\ex1\WebApplication1\GeneratedMstests\..\UnitTestProject2\bin\Debug\nunit.framework.dll
-	   
-	// Considering DLL C:\tmp\ex1\WebApplication1\GeneratedMstests\..\UnitTestProject2\bin\Debug\UnitTestProject2.dll
-	   	         ///
-	         /// Adding tests found in the DLL C:\tmp\ex1\WebApplication1\GeneratedMstests\..\UnitTestProject2\bin\Debug\UnitTestProject2.dll
+	
+		         ///
+	         /// Adding tests found in the DLL C:\projects\github\T4GenerateMsTestWrappersForNunitTests\T4GenerateMsTestWrappersForNunitTests\GeneratedMstests\..\UnitTestProject2\bin\Debug\UnitTestProject2.dll
 	         ///
 		    [TestClass]
 		    public class Generated_UnitTestProject2_MoreNUnitTests 
@@ -100,7 +99,7 @@ namespace GeneratedMsTest
 				public Generated_UnitTestProject2_MoreNUnitTests()
 				{
 					//
-					// TODO: Add constructor logic here
+					// Add constructor logic here if require
 					//
 				}
 

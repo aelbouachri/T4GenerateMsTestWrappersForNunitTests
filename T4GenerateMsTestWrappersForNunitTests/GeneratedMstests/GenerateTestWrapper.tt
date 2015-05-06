@@ -10,7 +10,38 @@
 <#@ import namespace="NUnit.Framework" #>
 <#@ output extension=".cs" #>
 
-// This is generated code using the T4 template by <#=Host.TemplateFile #>
+// This is generated code using the T4 template
+// The template file is <#=Host.TemplateFile #>
+<#
+	// get the msbuild variables if we can
+	var configName = Host.ResolveParameterValue("-", "-", "configuration");
+	var generatingProjectFolder = Host.ResolveParameterValue("-", "-", "projectName");
+	var solutionPath = Host.ResolveParameterValue("-", "-", "slnDir");
+
+	if (String.IsNullOrEmpty(configName)==true)
+	{
+		WriteLine ("// Generated from Visual Studio");
+		IServiceProvider serviceProvider = (IServiceProvider)this.Host;
+        DTE dte = serviceProvider.GetService(typeof(DTE)) as DTE;  
+		var folders = dte.ActiveDocument.Path.Trim().Split('\\');
+		generatingProjectFolder = folders[folders.Length -2]; // -2 as have trailling \ at end
+		solutionPath =System.IO.Path.GetDirectoryName(dte.Solution.FullName);
+		configName = dte.Solution.SolutionBuild.ActiveConfiguration.Name ;
+
+    } else
+	{  
+		WriteLine ("// Generated from MSBuild");
+	}
+
+	/*
+	// Debug info
+	WriteLine(String.Format("// Config {0}",configName));
+	WriteLine(String.Format("// Project {0}",generatingProjectFolder));
+	WriteLine(String.Format("// Folder {0}",solutionPath));
+	*/
+
+#>
+
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
@@ -18,32 +49,19 @@ using NUnit.Framework;
 namespace GeneratedMsTest
 {
     <#
-	IServiceProvider serviceProvider = (IServiceProvider)this.Host;
-    DTE dte = serviceProvider.GetService(typeof(DTE)) as DTE;  
-    // var configName = dte.Solution.SolutionBuild.ActiveConfiguration.Name ;
-
-
-	var configName = "Debug";
-	//var generatingProjectFolder = $(ProjectDir);
-	
-	var generatingProjectFolder = "GeneratedMstests";
-	var solutionPath = System.IO.Path.GetDirectoryName(Host.TemplateFile) + @"\..\";
-
-	// we could use
 	foreach (var dllpath in Directory.GetFiles(solutionPath, "*.dll",SearchOption.AllDirectories))
 	{ 
 	
 	   // we only want to scan for DLLs in the bin folder of other projects
-	   // this is ugly code but works
-       if ((dllpath.Contains("package")== false) &&  // the nuget folder
-	       (dllpath.Contains("obj")== false) &&      // and temp folder
-		   (dllpath.Contains(configName) == true) && // the same configuration was we are building
-		   (dllpath.Contains(generatingProjectFolder + @"\bin") == false))  // the project contain template
+	   // this is ugly code but works for both VS and MSBuild
+       if ((dllpath.Contains("package")== false) &&  // avoid the nuget folder
+	       (dllpath.Contains("obj")== false) &&      // and temp folders
+		   (dllpath.Contains(configName) == true) && // with match configuration we are building
+		   (dllpath.Contains(generatingProjectFolder + @"\bin") == false))  // that arn't local copies of the project contain template
 	   {
-	   #>
-// Considering DLL <#= dllpath #>
-	   <#
-
+   		  // debug info
+		  // WriteLine (String.Format("// Considering DLL {0}", dllpath));
+	   
 	      // load the dll, we do it via a Btye array to avoid putting a lock on the file
 	      Byte[] bytes = System.IO.File.ReadAllBytes(dllpath);
 	
@@ -62,7 +80,7 @@ namespace GeneratedMsTest
 				public Generated_<#= type.Namespace#>_<#= type.Name #>()
 				{
 					//
-					// TODO: Add constructor logic here
+					// Add constructor logic here if require
 					//
 				}
 
