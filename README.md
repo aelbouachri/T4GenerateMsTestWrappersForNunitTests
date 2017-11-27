@@ -8,5 +8,5 @@ Beyond the actual [T4 template](https://github.com/rfennell/T4GenerateMsTestWrap
 ## Usage
 Add the GeneratedMstests project to your solution and add reference from it to any projects in the solution containing nUnit tests.
 
-##More Information
+## More Information
 Extra background and documentation can be found in [this blog post]( http://blogs.blackmarble.co.uk/blogs/rfennell/post/2015/05/07/Generating-MsTest-wrappers-for-nUnit-tests)
